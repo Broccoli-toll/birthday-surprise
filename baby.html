@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Happy Birthday My Love 💖</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      overflow-x: hidden;
+      background-color: #0b0c10;
+      font-family: 'Noto Serif SC', serif;
+      color: #fff;
+    }
+    .font-handwriting {
+      font-family: 'Ma Shan Zheng', cursive;
+    }
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
+    .glow-text {
+      text-shadow: 0 0 15px rgba(255, 182, 193, 0.6), 0 0 30px rgba(255, 105, 180, 0.4);
+    }
+    .heart {
+      display: inline-block;
+      color: #ff4b72;
+      animation: heartBeat 1.2s infinite ease-in-out;
+    }
+    @keyframes heartBeat {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.25); }
+    }
+  </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen relative p-4">
+
+  <!-- 背景粒子/烟花画布 -->
+  <canvas id="bgCanvas"></canvas>
+
+  <!-- 主交互容器 -->
+  <div class="relative z-10 w-full max-w-lg mx-auto text-center">
+
+    <!-- 顶端流光标题 -->
+    <div class="mb-8">
+      <span class="text-sm tracking-widest text-pink-300 uppercase block mb-2 opacity-80">Midnight Special Wish</span>
+      <h1 class="text-4xl md:text-5xl font-extrabold text-pink-100 glow-text tracking-wide">
+        生日快乐 <span class="heart">❤️</span>
+      </h1>
+    </div>
+
+    <!-- 动态陪伴天数计算器卡片 -->
+    <div class="glass-card rounded-2xl p-6 mb-8 transform hover:scale-105 transition duration-500">
+      <p class="text-gray-300 text-sm mb-2">不知不觉，我们已经一起走过了</p>
+      <div class="flex items-center justify-center space-x-2 my-2">
+        <span id="daysCount" class="text-5xl font-black font-handwriting text-pink-400 glow-text">--</span>
+        <span class="text-gray-300 text-lg">天</span>
+      </div>
+      <p id="startDateText" class="text-xs text-pink-200 opacity-60 mt-1">每一天都记录着我们的脚印与风景</p>
+    </div>
+
+    <!-- 走心祝福正文卡片 -->
+    <div class="glass-card rounded-2xl p-6 md:p-8 text-left leading-relaxed text-gray-200 text-base md:text-lg mb-8 space-y-4">
+      <p>00:00，祝我家大宝贝生日快乐！🎂</p>
+      <p>一起到处瞎转悠、看风景的画面都特别清晰。跟你在一起，去哪儿都觉得很好玩。</p>
+      <p class="text-pink-200 font-semibold text-center my-4 tracking-wider text-xl glow-text font-handwriting">
+        “ 小狗宝宝🎂🎂生日快乐🎂🎂，年年今朝，岁岁安康，平安喜乐，自由随性，我喜欢你。”
+      </p>
+      <p>新的一岁，请继续做那个无忧无虑的小探险家，未来的地图我还赖着要跟你一起拼完。</p>
+      <p class="text-right text-pink-300 font-medium">今晚先做个好梦，醒了听我指挥！✨</p>
+    </div>
+
+    <!-- 底部浪漫惊喜按钮 -->
+    <button onclick="triggerSurprise()" class="relative inline-flex items-center justify-center px-8 py-3 overflow-hidden font-medium text-white bg-gradient-to-r from-pink-500 to-rose-500 rounded-full shadow-lg group hover:from-pink-600 hover:to-rose-600 transition duration-300 transform active:scale-95">
+      <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-56 group-hover:h-56 opacity-10"></span>
+      <span class="relative text-base tracking-wide font-semibold">点击解锁零点浪漫 🎆</span>
+    </button>
+  </div>
+
+  <script>
+    // ==========================================
+    // ⚙️ 请在这里填入你们【在一起】或【第一次见面】的日期！
+    // 格式：'YYYY-MM-DD'（系统会自动帮你算出准确天数）
+    // ==========================================
+    const START_DATE = '2026-04-01'; // <-- 修改这里的日期即可
+
+    // 计算天数逻辑
+    function calculateDays() {
+      const start = new Date(START_DATE);
+      const today = new Date();
+      const diffTime = Math.abs(today - start);
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      document.getElementById('daysCount').innerText = diffDays;
+    }
+    calculateDays();
+
+    // 背景爱心与星空 Canvas 效果
+    const canvas = document.getElementById('bgCanvas');
+    const ctx = canvas.getContext('2d');
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
+
+    window.addEventListener('resize', () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    });
+
+    const particles = [];
+    for (let i = 0; i < 60; i++) {
+      particles.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        size: Math.random() * 3 + 1,
+        speedY: Math.random() * 0.8 + 0.2,
+        opacity: Math.random() * 0.6 + 0.2
+      });
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, width, height);
+      particles.forEach(p => {
+        p.y -= p.speedY;
+        if (p.y < 0) p.y = height;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 182, 193, ${p.opacity})`;
+        ctx.fill();
+      });
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    // 点击按钮生成炫彩小粒子
+    function triggerSurprise() {
+      for (let i = 0; i < 40; i++) {
+        particles.push({
+          x: width / 2,
+          y: height / 2 + 100,
+          size: Math.random() * 5 + 2,
+          speedY: (Math.random() - 0.5) * 8,
+          xVel: (Math.random() - 0.5) * 8,
+          opacity: 1
+        });
+      }
+      alert("🎉 零点祝福已送达！");
+    }
+  </script>
+</body>
+</html>
